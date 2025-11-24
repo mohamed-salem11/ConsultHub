@@ -1,0 +1,105 @@
+﻿@model IEnumerable<ConsultHub.Models.Booking>
+
+<div class="container mt-4">
+    @if (Model != null && Model.Any())
+    {
+        <div class="row">
+            @foreach (var booking in Model)
+            {
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm text-center">
+
+                        <!-- صورة الاستشارة -->
+                        <a asp-controller="Consultation" asp-action="Details" asp-route-id="@booking.Consultation.Id">
+                            <img src="@booking.Consultation.CoverImageUrl"
+                                 alt="@booking.Consultation.Title"
+                                 class="card-img-top"
+                                 style="height:200px;object-fit:cover;" />
+                        </a>
+
+                        <div class="card-body">
+
+                            <!-- تاريخ الحجز -->
+                            <p><strong>Booked At:</strong> @booking.BookedAt.ToShortDateString()</p>
+
+                            <!-- بيانات الاستشاري -->
+                            <div class="d-flex align-items-center justify-content-center mb-2">
+                                <a asp-controller="Consultant" asp-action="Profile" asp-route-id="@booking.Consultation.ApplicationUser.Id" class="d-flex align-items-center text-decoration-none">
+                                    <img src="@booking.Consultation.ApplicationUser.Photo"
+                                         alt="@booking.Consultation.ApplicationUser.FullName"
+                                         class="rounded-circle me-2"
+                                         style="width:40px; height:40px; object-fit:cover;" />
+                                    <span>@booking.Consultation.ApplicationUser.FullName</span>
+                                </a>
+                            </div>
+
+                            <!-- وصف الاستشارة -->
+                            <p class="text-muted">
+                                @(string.IsNullOrEmpty(booking.Consultation.Description)
+                                                        ? "No description available"
+                                                        : booking.Consultation.Description.Substring(0, Math.Min(100, booking.Consultation.Description.Length)) + "...")
+                    </p>
+
+                            <!-- التقييم -->
+                            <div class="rating-section mb-2">
+                        @if (booking.Consultation.TotalVotes > 0)
+                                {
+                                    <span class="text-warning fw-bold">
+                                        @booking.Consultation.AverageRating.ToString("0.0") ⭐
+                                    </span>
+                                    <span class="text-muted small">(@booking.Consultation.TotalVotes reviews)</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No reviews yet</span>
+                                }
+                            </div>
+
+                            <p>@booking.Consultation.NumberOfClients clients</p>
+
+                            <!-- الحالة والأزرار -->
+                            <div class="mt-3">
+                                @if (booking.Status == ConsultHub.Models.BookingStatus.Pending)
+                                {
+                                    <span class="badge bg-secondary">Pending ⏳</span>
+                                }
+                                else if (booking.Status == ConsultHub.Models.BookingStatus.InProgress)
+                                {
+                                    <span class="badge bg-info">In Progress 🔄</span>
+                                }
+                                else @if (booking.Status == BookingStatus.AwaitingConfirmation)
+                                {
+                                    <form asp-controller="Booking" asp-action="ConfirmCompletion" method="post" class="d-inline">
+                                        <input type="hidden" name="bookingId" value="@booking.Id" />
+                                        <button type="submit" class="btn btn-success btn-sm">Confirm Completion</button>
+                                    </form>
+
+                                  
+                                    <form asp-controller="Booking" asp-action="ReportProblem" method="post" class="mt-2">
+                                        <input type="hidden" name="bookingId" value="@booking.Id" />
+                                        <textarea name="problemDescription" class="form-control mb-2" placeholder="Describe the issue..." required></textarea>
+                                        <button type="submit" class="btn btn-danger btn-sm">Report Problem</button>
+                                    </form>
+                                }
+
+                                else if (booking.Status == ConsultHub.Models.BookingStatus.Completed)
+                                {
+                                    <span class="badge bg-success">Completed  </span>
+                                }
+                                else if (booking.Status == ConsultHub.Models.BookingStatus.Disputed)
+                                {
+                                    <span class="badge bg-warning">Disputed ⚠️</span>
+                                }
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p class="text-muted">You have not booked any consultations yet.</p>
+    }
+</div>

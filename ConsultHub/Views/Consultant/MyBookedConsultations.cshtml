@@ -1,0 +1,23 @@
+﻿@model IEnumerable<ConsultHub.Models.Booking>
+
+<h2>Bookings for My Consultations</h2>
+
+@foreach (var booking in Model)
+{
+    <div class="card mb-3 p-3">
+        <h4>@booking.ApplicationUser.Email booked @booking.Consultation.Title</h4>
+        <p>Status: @booking.Status</p>
+
+        @if (booking.Status == BookingStatus.InProgress || booking.Status == BookingStatus.Pending)
+        {
+            <form asp-action="RequestCompletion" method="post">
+                <input type="hidden" name="bookingId" value="@booking.Id" />
+                <button type="submit" class="btn btn-primary">Request Completion</button>
+            </form>
+        }
+        else if (booking.Status == BookingStatus.AwaitingConfirmation)
+        {
+            <span class="badge bg-info">Awaiting Client Confirmation</span>
+        }
+    </div>
+}

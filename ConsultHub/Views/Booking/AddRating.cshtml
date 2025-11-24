@@ -1,0 +1,22 @@
+﻿@model ConsultHub.Models.Consultation
+
+<div class="container mt-4">
+    <h2>Add Rating for @Model.Title</h2>
+
+    <form asp-action="AddRating" method="post">
+        <input type="hidden" name="consultationId" value="@Model.Id" />
+
+        <div class="mb-3">
+            <label class="form-label">Rating (1-5)</label>
+            <select name="rating" class="form-select">
+                <option value="1">1 - Poor</option>
+                <option value="2">2 - Fair</option>
+                <option value="3">3 - Good</option>
+                <option value="4">4 - Very Good</option>
+                <option value="5">5 - Excellent</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success">Submit Rating</button>
+    </form>
+</div>

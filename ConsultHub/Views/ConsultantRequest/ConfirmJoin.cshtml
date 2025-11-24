@@ -1,0 +1,30 @@
+﻿<div class="container mt-5">
+    <div class="card p-4 shadow">
+
+        <h3 class="text-center mb-3">Join as Consultant</h3>
+
+        <p>
+            Before continuing, please confirm that you want to apply as a consultant.
+            You should have at least <strong>5 years of experience</strong> in your field.
+        </p>
+
+        <p>
+            If you meet the requirements, click continue to fill in your consultant application details.
+        </p>
+
+        <div class="text-center mt-4">
+            <a class="btn btn-primary px-4"
+               asp-controller="ConsultantRequest"
+               asp-action="SubmitRequest">
+                Continue
+            </a>
+
+            <a class="btn btn-secondary px-4 ms-2"
+               asp-controller="Home"
+               asp-action="Index">
+                Cancel
+            </a>
+        </div>
+
+    </div>
+</div>

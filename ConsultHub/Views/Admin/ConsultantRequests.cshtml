@@ -1,0 +1,43 @@
+﻿@model List<ApplicationUser>
+
+<h2>Consultant Requests</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
+
+@if (Model != null && Model.Any())
+{
+    <div class="row mt-4">
+        @foreach (var user in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    @if (!string.IsNullOrEmpty(user.Photo))
+                    {
+                        <img src="@user.Photo" class="card-img-top" alt="@user.FullName" style="height:200px;object-fit:cover;" />
+                    }
+
+                    <div class="card-body text-center">
+                        <h5 class="card-title">@user.FullName</h5>
+                        <p class="text-muted">@user.Email</p>
+                        <p><strong>Specialization:</strong> @user.Specialization</p>
+                        <p><strong>Bio:</strong> @user.Bio</p>
+                    </div>
+
+                    <div class="card-footer text-center">
+                        <a asp-action="ApproveConsultant" asp-route-userId="@user.Id" class="btn btn-success btn-sm me-2">Approve</a>
+                        <a asp-action="RejectConsultant" asp-route-userId="@user.Id" class="btn btn-danger btn-sm">Reject</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-info mt-4 text-center">
+        No consultant requests at the moment
+    </div>
+}

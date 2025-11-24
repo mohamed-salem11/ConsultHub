@@ -1,0 +1,20 @@
+﻿@model IEnumerable<ConsultHub.Models.Booking>
+
+<h2>All Bookings</h2>
+
+@foreach (var booking in Model)
+{
+    <div class="card mb-3 p-3">
+        <h4>@booking.ApplicationUser.Email → @booking.Consultation.Title</h4>
+        <p>Status: @booking.Status</p>
+
+        @if (booking.Status == BookingStatus.Disputed)
+        {
+            <form asp-action="ResolveDispute" method="post">
+                <input type="hidden" name="bookingId" value="@booking.Id" />
+                <button type="submit" name="approveCompletion" value="true" class="btn btn-success">Mark Completed</button>
+                <button type="submit" name="approveCompletion" value="false" class="btn btn-warning">Keep Disputed</button>
+            </form>
+        }
+    </div>
+}

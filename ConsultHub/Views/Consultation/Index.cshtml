@@ -1,0 +1,179 @@
+﻿@model IEnumerable<ConsultHub.Models.Consultation>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject ConsultHub.Data.ApplicationDbContext DbContext
+
+@{
+    var user = await UserManager.GetUserAsync(User);
+    var userId = user?.Id;
+    var isAdmin = User.IsInRole("Admin");
+}
+
+<div class="container mt-5 mb-5">
+    <h2 class="mb-4 text-center">@ViewData["Title"]</h2>
+
+    <div class="consultation-container">
+        @foreach (var consultation in Model)
+        {
+            var booked = false;
+            if (userId != null)
+            {
+                booked = DbContext.Bookings.Any(b => b.ConsultationId == consultation.Id && b.ApplicationUserId == userId);
+            }
+
+            <div class="consultation-card">
+
+                <a asp-controller="Consultation" asp-action="Details" asp-route-id="@consultation.Id">
+                    <img src="@consultation.CoverImageUrl"
+                         alt="@consultation.Title"
+                         class="consultation-image" />
+                </a>
+
+                <h4 class="mt-3">@consultation.Title</h4>
+
+                @if (consultation.ApplicationUser != null)
+                {
+                    <div class="consultant-name mb-2 d-flex align-items-center justify-content-center gap-2">
+                        <img src="@consultation.ApplicationUser.Photo" alt="@consultation.ApplicationUser.FullName"
+                             style="width:30px;height:30px;border-radius:50%;object-fit:cover;" />
+                        <a asp-controller="Consultant" asp-action="Profile" asp-route-id="@consultation.ApplicationUserId"
+                           class="text-decoration-none fw-bold text-primary">
+                            @consultation.ApplicationUser.FullName
+                        </a>
+                    </div>
+                }
+
+                <p class="text-muted">
+                    @consultation.Description.Substring(0, Math.Min(80, consultation.Description.Length))...
+                </p>
+
+                <div class="rating-section mb-2">
+                    @if (consultation.TotalVotes > 0)
+                    {
+                        <span class="text-warning fw-bold">
+                            @(consultation.AverageRating.ToString("0.0"))
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= consultation.AverageRating)
+                                {
+                                    <i class="bi bi-star-fill"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-star"></i>
+                                }
+                            }
+                        </span>
+                        <span class="text-muted small">(@consultation.TotalVotes reviews)</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">No reviews</span>
+                    }
+                </div>
+
+                <p class="text-muted mb-2">
+                    <i class="bi bi-people-fill"></i> @consultation.NumberOfClients clients
+                </p>
+
+                <p class="fw-bold text-primary mb-3">@consultation.Price EGP</p>
+
+                <div class="d-flex flex-column gap-2">
+                    @if (isAdmin)
+                    {
+                
+                        <a asp-controller="Consultation" asp-action="Delete" asp-route-id="@consultation.Id"
+                           class="btn btn-danger w-100">
+                            <i class="bi bi-trash-fill"></i> Delete Consultation
+                        </a>
+                    }
+                    else if (consultation.ApplicationUserId == userId)
+                    {
+                     
+                        <a asp-controller="Consultation" asp-action="Edit" asp-route-id="@consultation.Id"
+                           class="btn btn-outline-primary w-100">
+                            <i class="bi bi-pencil-square"></i> Edit Consultation
+                        </a>
+                        <a asp-controller="Consultation" asp-action="Delete" asp-route-id="@consultation.Id"
+                           class="btn btn-danger w-100">
+                            <i class="bi bi-trash-fill"></i> Delete Consultation
+                        </a>
+                    }
+                  
+                    else
+                    {
+                
+                        <form asp-controller="Booking" asp-action="BookConsultation" method="post">
+                            <input type="hidden" name="consultationId" value="@consultation.Id" />
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-cart-fill"></i> Book / Pay
+                            </button>
+                        </form>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .consultation-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+        padding: 20px;
+    }
+
+    .consultation-card {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        padding: 20px;
+        text-align: center;
+        transition: transform .2s ease-in-out;
+    }
+
+        .consultation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+    .consultation-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 10px;
+        transition: opacity 0.2s;
+    }
+
+        .consultation-image:hover {
+            opacity: 0.9;
+        }
+
+    .consultant-name {
+        font-size: 14px;
+        color: #6c757d;
+    }
+
+        .consultant-name a:hover {
+            color: #0d6efd;
+        }
+
+    .rating-section {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+        .rating-section i {
+            font-size: 14px;
+        }
+
+    .btn-success, .btn-primary, .btn-outline-primary, .btn-danger {
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+</style>

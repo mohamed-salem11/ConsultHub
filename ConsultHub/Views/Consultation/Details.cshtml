@@ -1,0 +1,123 @@
+﻿@model ConsultHub.Models.Consultation
+@using ConsultHub.Data
+@inject ApplicationDbContext DbContext
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Consultation Details";
+    var currentUserId = User?.Identity?.IsAuthenticated == true
+        ? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+        : null;
+    var isOwner = currentUserId == Model.ApplicationUserId;
+    var isAdmin = User.IsInRole("Admin");
+
+ 
+    var hasBooking = false;
+    if (currentUserId != null)
+    {
+        hasBooking = DbContext.Bookings.Any(b => b.ConsultationId == Model.Id && b.ApplicationUserId == currentUserId);
+    }
+}
+
+<div class="container mt-5 mb-5">
+    <div class="card shadow-lg border-0">
+        <div class="row g-0">
+            <!-- Cover Image -->
+            <div class="col-md-5">
+                <img src="@Model.CoverImageUrl" alt="@Model.Title"
+                     class="img-fluid rounded-start"
+                     style="height:100%;object-fit:cover;" />
+            </div>
+
+            <!-- Consultation Info -->
+            <div class="col-md-7">
+                <div class="card-body">
+                    <h2 class="card-title fw-bold text-primary">@Model.Title</h2>
+                    <p class="card-text text-muted">@Model.Description</p>
+
+                    <hr />
+
+                    <p>
+                        <span class="fw-bold">Price:</span>
+                        <span class="badge bg-success">@Model.Price EGP</span>
+                    </p>
+
+                    <p>
+                        <span class="fw-bold">Rating:</span>
+                        @if (Model.TotalVotes > 0)
+                        {
+                            <span class="text-warning fw-bold">
+                                @(Model.AverageRating.ToString("0.0") ?? "0.0") ⭐
+                            </span>
+                            <span class="text-muted small">(@Model.TotalVotes reviews)</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">No reviews yet</span>
+                        }
+                    </p>
+
+                    <p>
+                        <span class="fw-bold">Category:</span>
+                        <span class="badge bg-info text-dark">@Model.Category?.Name</span>
+                    </p>
+
+                    <p>
+                        <span class="fw-bold">Consultant:</span>
+                        <a asp-controller="Consultant" asp-action="Profile" asp-route-id="@Model.ApplicationUserId"
+                           class="text-decoration-none text-primary fw-bold">
+                            @Model.ApplicationUser?.FullName
+                        </a>
+                    </p>
+
+                    <div class="mt-4 d-flex flex-wrap gap-2">
+                        @if (isOwner)
+                        {
+                            <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-outline-primary">
+                                <i class="bi bi-pencil-square"></i> Edit
+                            </a>
+                        }
+                        else if (isAdmin)
+                        {
+                            <a asp-action="Delete" asp-route-id="@Model?.Id" class="btn btn-outline-danger"
+                               onclick="return confirm('Are you sure you want to delete this consultation?');">
+                                <i class="bi bi-trash"></i> Delete
+                            </a>
+                        }
+
+                
+                        @if (hasBooking)
+                        {
+                            <form asp-controller="Booking" asp-action="AddRating" method="post" class="d-inline">
+                                <input type="hidden" name="consultationId" value="@Model.Id" />
+                                <select name="rating" class="form-select d-inline w-auto">
+                                    <option value="1">1 ⭐</option>
+                                    <option value="2">2 ⭐⭐</option>
+                                    <option value="3">3 ⭐⭐⭐</option>
+                                    <option value="4">4 ⭐⭐⭐⭐</option>
+                                    <option value="5">5 ⭐⭐⭐⭐⭐</option>
+                                </select>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-star-fill"></i> Submit Rating
+                                </button>
+                            </form>
+
+                            <form asp-controller="Booking" asp-action="RemoveRating" method="post" class="d-inline">
+                                <input type="hidden" name="consultationId" value="@Model.Id" />
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="bi bi-x-circle"></i> Remove Rating
+                                </button>
+                            </form>
+                        }
+
+                       
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left-circle"></i> Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

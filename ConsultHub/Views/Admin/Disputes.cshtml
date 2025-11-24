@@ -1,0 +1,61 @@
+﻿@model IEnumerable<ConsultHub.Models.Booking>
+
+<div class="container mt-4">
+    <h2>Disputed Bookings</h2>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row">
+            @foreach (var booking in Model)
+            {
+                <div class="col-lg-6 mb-4">
+                    <div class="card shadow-sm p-3">
+                        <h5 class="card-title">@booking.Consultation.Title</h5>
+
+                     
+                        <p><strong>Client:</strong> @booking.ApplicationUser.FullName (@booking.ApplicationUser.Email)</p>
+
+                        <div class="d-flex align-items-center mb-2">
+                            <a asp-controller="Consultant" asp-action="Profile" asp-route-id="@booking.Consultation.ApplicationUser.Id" class="d-flex align-items-center text-decoration-none">
+                                <img src="@booking.Consultation.ApplicationUser.Photo"
+                                     alt="@booking.Consultation.ApplicationUser.FullName"
+                                     class="rounded-circle me-2"
+                                     style="width:40px; height:40px; object-fit:cover;" />
+                                <span><strong>Consultant:</strong> @booking.Consultation.ApplicationUser.FullName</span>
+                            </a>
+                            <span class="text-muted ms-2">(@booking.Consultation.ApplicationUser.Email)</span>
+                        </div>
+
+                    
+                        <p><strong>Booked At:</strong> @booking.BookedAt.ToShortDateString()</p>
+                        <p><strong>Problem Reported:</strong> @booking.ProblemDescription</p>
+                        <p><strong>Status:</strong> @booking.Status</p>
+
+                      
+                        <form asp-controller="Admin" asp-action="ResolveDispute" method="post">
+                            <input type="hidden" name="bookingId" value="@booking.Id" />
+                            <button type="submit" name="approveCompletion" value="true" class="btn btn-success btn-sm">Mark Completed</button>
+                            <button type="submit" name="approveCompletion" value="false" class="btn btn-warning btn-sm">Keep Disputed</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p class="text-muted">No disputes found.</p>
+    }
+</div>
+
+
+
+
+
+
+
+
+
+
+
+

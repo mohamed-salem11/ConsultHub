@@ -1,0 +1,12 @@
+﻿@model ConsultHub.Models.Consultation
+
+<div class="container mt-4">
+    <h2>Remove Rating for @Model.Title</h2>
+
+    <form asp-action="RemoveRating" method="post">
+        <input type="hidden" name="consultationId" value="@Model.Id" />
+        <p>Are you sure you want to remove your rating?</p>
+        <button type="submit" class="btn btn-danger">Remove Rating</button>
+        <a asp-controller="Consultation" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

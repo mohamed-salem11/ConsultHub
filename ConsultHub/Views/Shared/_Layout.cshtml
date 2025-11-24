@@ -1,0 +1,610 @@
+﻿
+
+
+@using Microsoft.AspNetCore.Identity
+@using ConsultHub.Models
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ConsultHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .footer-links li {
+            margin-bottom: 8px;
+        }
+
+        .social-icons a {
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+
+            .social-icons a:hover {
+                color: #ffc107;
+            }
+
+        .footer-logo-icon {
+            font-size: 1.1rem;
+        }
+
+        /* Navbar Styles */
+        .navbar-custom {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            box-shadow: 0 2px 10px rgba(37, 99, 235, 0.2);
+            padding: 0.75rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2563eb;
+            font-weight: bold;
+        }
+
+        .navbar-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            margin: 0 0.25rem;
+            padding: 0.5rem 1rem !important;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+            .navbar-nav .nav-link:hover {
+                color: white !important;
+                background: rgba(255, 255, 255, 0.1);
+                transform: translateY(-1px);
+            }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            padding: 0.5rem 0;
+        }
+
+        .dropdown-item {
+            padding: 0.5rem 1.25rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+            .dropdown-item:hover {
+                background: #f8fafc;
+                color: #2563eb;
+            }
+
+        /* Main Content */
+        main {
+            min-height: calc(100vh - 200px);
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        /* Fix for login/register pages content alignment */
+        .container {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        /* Ensure proper spacing for all page content */
+        .row {
+            margin-left: -15px;
+            margin-right: -15px;
+        }
+
+        .col, .col-1, .col-2, .col-3, .col-4, .col-5, .col-6,
+        .col-7, .col-8, .col-9, .col-10, .col-11, .col-12,
+        .col-auto, .col-sm, .col-sm-1, .col-sm-2, .col-sm-3,
+        .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8,
+        .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-auto,
+        .col-md, .col-md-1, .col-md-2, .col-md-3, .col-md-4,
+        .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9,
+        .col-md-10, .col-md-11, .col-md-12, .col-md-auto,
+        .col-lg, .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4,
+        .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9,
+        .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-auto,
+        .col-xl, .col-xl-1, .col-xl-2, .col-xl-3, .col-xl-4,
+        .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9,
+        .col-xl-10, .col-xl-11, .col-xl-12, .col-xl-auto {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        /* Additional spacing for form pages */
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Ensure proper content width and centering */
+        .page-content {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Join as Instructor Section */
+        .instructor-cta {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 4rem 0;
+            margin-top: 3rem;
+        }
+
+        .cta-card {
+            background: white;
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .cta-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, #2563eb, #3b82f6, #60a5fa);
+            }
+
+        .cta-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .cta-text {
+            font-size: 1.125rem;
+            color: #64748b;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-instructor {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            border: none;
+            color: white;
+            padding: 1rem 2.5rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+            .btn-instructor:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+                color: white;
+            }
+
+        /* Footer Styles */
+        .footer {
+            background: #1e293b;
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+
+            .footer h5 {
+                color: white;
+                font-weight: 600;
+                margin-bottom: 1.5rem;
+                font-size: 1.125rem;
+            }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #2563eb;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+
+        .footer-description {
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+            .footer-links li {
+                margin-bottom: 0.75rem;
+            }
+
+            .footer-links a {
+                color: #94a3b8;
+                text-decoration: none;
+                transition: color 0.3s ease;
+            }
+
+                .footer-links a:hover {
+                    color: #60a5fa;
+                }
+
+        .contact-info {
+            color: #94a3b8;
+        }
+
+            .contact-info i {
+                color: #2563eb;
+                margin-right: 0.75rem;
+                width: 20px;
+            }
+
+            .contact-info div {
+                margin-bottom: 1rem;
+            }
+
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            background: #334155;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+            .social-icon:hover {
+                background: #2563eb;
+                color: white;
+                transform: translateY(-2px);
+            }
+
+        .footer-bottom {
+            border-top: 1px solid #334155;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            text-align: center;
+            color: #94a3b8;
+        }
+
+        /* Responsive Design */
+        @@media (max-width: 768px) {
+            .cta-title {
+                font-size: 1.75rem;
+            }
+
+            .cta-text {
+                font-size: 1rem;
+            }
+
+            .cta-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .footer {
+                text-align: center;
+            }
+
+            .social-icons {
+                justify-content: center;
+            }
+        }
+
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .user-name {
+            color: white;
+            font-weight: 500;
+            margin-left: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <div class="logo-icon">CH</div>
+                ConsultHub
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Category/Index">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Consultation/Index">Consultations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-outline-success ms-2" href="/Booking/MyBookings">MyBookings</a>
+                    </li>
+
+                    <li>
+                        <form asp-controller="Consultation" asp-action="SearchPage" method="get" class="d-flex">
+                            <button class="btn ms-2 text-white">Search</button>
+
+                        </form>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact-section">Contact</a>
+                    </li>
+
+
+
+                </ul>
+                <ul class="navbar-nav">
+
+
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        var currentUser = await UserManager.GetUserAsync(User);
+
+                        if (currentUser != null && currentUser.IsConsultant)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link d-flex align-items-center"
+                                   href="/Consultant/MyProfile/@currentUser.Id">
+
+                                    <i class="fas fa-user-tie me-2"></i>
+                                    <span>Consultat Profile</span>
+
+                                </a>
+                            </li>
+                        }
+                    }
+
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-tachometer-alt me-1"></i> Admin Dashboard
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/Consultation/Index"><i class="fas fa-book me-2"></i>Manage Consultations</a></li>
+                                <li><a class="dropdown-item" href="/Category/Index"><i class="fas fa-tags me-2"></i>Manage Categories</a></li>
+                                <li><a class="dropdown-item" href="/Admin/Disputes"><i class="fas fa-tags me-2"></i>Manage Reports</a></li>
+                                <li><a class="dropdown-item" href="/Admin/ConsultantRequests"><i class="fas fa-users me-2"></i>Consultant Requests</a></li>
+                                <li><a class="dropdown-item" href="/Admin/PendingConsultations"><i class="fas fa-chart-bar me-2"></i>Consultation Approval Requests</a></li>
+                            </ul>
+                        </li>
+                    }
+
+
+                    <!-- Login Partial -->
+                    <partial name="_LoginPartial" />
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <div class="container my-5">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div><!-- Footer -->
+    <footer class="footer bg-dark text-light pt-5 pb-3">
+        <div class="container">
+            <div class="row justify-content-between align-items-start">
+
+                <!-- About ConsultHub -->
+                <div class="col-lg-2 col-md-6 mb-4 me-4">
+                    <div class="footer-logo d-flex align-items-center mb-2">
+                        <div class="footer-logo-icon bg-light text-dark fw-bold me-2 px-2 py-1 rounded">CH</div>
+                        <h5 class="mb-0">ConsultHub</h5>
+                    </div>
+                    <p class="footer-description small fw-semibold">
+                        Empowering clients worldwide with trusted consultations.
+                        Join thousands of users and consultants in our growing advisory community.
+                    </p>
+                </div>
+
+                <!-- Links -->
+                <div class="col-lg-2 col-md-6 mb-4 me-4">
+                    <h5>Quick Links</h5>
+                    <ul class="footer-links list-unstyled">
+                        <li><a href="/about" class="text-light text-decoration-none">About Us</a></li>
+                        <li><a href="/Course/Index" class="text-light text-decoration-none">Courses</a></li>
+                        <li><a href="/#" class="text-light text-decoration-none">Privacy Policy</a></li>
+                        <li><a href="/#" class="text-light text-decoration-none">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+
+
+                <!-- Contact  -->
+                <div id="contact-section" class="col-lg-3 col-md-6 mb-4 me-4">
+                    <h5 class="text-white">Contact Us</h5>
+                    <div class="contact-info small">
+                        <!-- Email -->
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-envelope" style="color:#0A66C2; font-size:20px;"></i>
+                            <span class="text-white fw-semibold">mghnam2022@gmail.com</span>
+                        </div>
+
+                        <!-- LinkedIn -->
+                        <div class="d-flex align-items-center gap-2 mt-2">
+                            <a href="https://eg.linkedin.com/in/mohamed-salem-781a66291" target="_blank" class="d-flex align-items-center text-decoration-none">
+                                <i class="bi bi-linkedin" style="color:#0A66C2; font-size:22px;"></i>
+                                <span class="text-white fw-semibold ms-2">LinkedIn Profile</span>
+                            </a>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="d-flex align-items-center gap-2 mt-2">
+                            <i class="fas fa-phone" style="color:#0A66C2; font-size:20px;"></i>
+                            <span class="text-white fw-semibold">+201272976287</span>
+                        </div>
+
+                        <!-- Location -->
+                        <div class="d-flex align-items-center gap-2 mt-2">
+                            <i class="fas fa-map-marker-alt" style="color:#0A66C2; font-size:20px;"></i>
+                            <span class="text-white fw-semibold">Cairo, Egypt</span>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- Social Media -->
+                <div class="col-lg-2 col-md-6 mb-4 me-3">
+                    <h5>Follow Us</h5>
+                    <div class="social-icons">
+                        <a href="#" class="text-light me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <!-- Join as Instructor -->
+                <div class="col-lg-2 col-md-6 mb-4 text-end">
+                    <a asp-controller="ConsultantRequest" asp-action="ConfirmJoin" class="btn btn-outline-light px-4">
+                        <i class="fas fa-chalkboard-teacher me-2"></i>
+                        Join as Consultant
+                    </a>
+
+                </div>
+
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom text-center mt-4 pt-2 border-top border-secondary">
+                <p class="mb-0 small">&copy; 2025 LearnHub. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+
+
+            if (userData.isAuthenticated && userData.userRole === 'Admin') {
+                document.getElementById('adminDashboard').style.display = 'block';
+            }
+
+
+            const currentPath = window.location.pathname;
+            if (currentPath === '/' || currentPath === '/home') {
+                document.getElementById('instructorSection').style.display = 'block';
+            }
+
+            const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9928f0dc316ce28e',t:'MTc2MTEzNTU0My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

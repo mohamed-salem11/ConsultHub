@@ -1,0 +1,56 @@
+﻿@model List<Consultation>
+
+<h2>Pending Consultations</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
+
+@if (Model != null && Model.Any())
+{
+    <div class="row mt-4">
+        @foreach (var consultation in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+
+                    @if (!string.IsNullOrEmpty(consultation.CoverImageUrl))
+                    {
+                        <img src="@consultation.CoverImageUrl" class="card-img-top" alt="@consultation.Title" style="height:200px;object-fit:cover;" />
+                    }
+
+                    <div class="card-body text-center">
+                        <h5 class="card-title">@consultation.Title</h5>
+                        <p class="text-muted">@consultation.Description</p>
+                        <p><strong>Category:</strong> @consultation.Category?.Name</p>
+                        <p><strong>Price:</strong> @consultation.Price EGP</p>
+
+                        @if (consultation.ApplicationUser != null)
+                        {
+                            <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+                                <img src="@consultation.ApplicationUser.Photo" alt="@consultation.ApplicationUser.FullName"
+                                     style="width:30px;height:30px;border-radius:50%;object-fit:cover;" />
+                                <a asp-controller="Consultant" asp-action="Profile" asp-route-id="@consultation.ApplicationUserId"
+                                   class="text-decoration-none">
+                                    @consultation.ApplicationUser.FullName
+                                </a>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="card-footer text-center">
+                        <a asp-action="ApproveConsultation" asp-route-id="@consultation.Id" class="btn btn-success btn-sm me-2">Approve</a>
+                        <a asp-action="RejectConsultation" asp-route-id="@consultation.Id" class="btn btn-danger btn-sm">Reject</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-info mt-4 text-center">
+        No pending consultations at the moment
+    </div>
+}

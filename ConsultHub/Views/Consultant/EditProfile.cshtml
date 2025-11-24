@@ -1,0 +1,61 @@
+﻿@model ConsultHub.Models.ApplicationUser
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">Edit Profile</h2>
+
+    <form asp-action="EditProfile" asp-controller="Consultant" method="post" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <div class="mb-3">
+                    @if (!string.IsNullOrEmpty(Model.Photo))
+                    {
+                        <img src="@Model.Photo" alt="@Model.FullName"
+                             class="rounded-circle shadow"
+                             style="width:200px;height:200px;object-fit:cover;" />
+                    }
+                    else
+                    {
+                        <img src="/images/default-profile.png" alt="Default"
+                             class="rounded-circle shadow"
+                             style="width:200px;height:200px;object-fit:cover;" />
+                    }
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Upload Photo</label>
+                    <input type="file" name="PhotoFile" class="form-control" />
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="mb-3">
+                    <label asp-for="Specialization" class="form-label"></label>
+                    <input asp-for="Specialization" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Bio" class="form-label"></label>
+                    <textarea asp-for="Bio" class="form-control" rows="5"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a asp-action="MyProfile" asp-controller="Consultant" class="btn btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+    .form-label {
+        font-weight: 600;
+    }
+
+    .btn-primary {
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .btn-secondary {
+        border-radius: 8px;
+        font-weight: 600;
+    }
+</style>
