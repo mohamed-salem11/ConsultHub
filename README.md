@@ -16,12 +16,7 @@ The platform enables professional booking, management, and evaluation of consult
 
 ###  Consultant Experience
 - Create and manage a professional profile.
-- Add new consultations with:
-  - Title
-  - Detailed description
-  - Price
-  - Category
-  - Cover image
+- Add new consultations.
 - Manage incoming bookings.
 - Monitor reviews and build professional reputation.
 
